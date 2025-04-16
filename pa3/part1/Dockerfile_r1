@@ -13,21 +13,34 @@ RUN apt-get install -y frr frr-pythontools
 
 RUN sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
 
-RUN service frr restart
-
-
-# Configure OSPF using vtysh
-# The below steps are added to configure the router using vtysh
-# These steps will configure OSPF, assign router ID, and define networks and OSPF link costs
 
 RUN echo "router ospf\n\
 ospf router-id 10.0.14.4\n\
-network 10.0.14.0/24 area 0.0.0.0\n\
 network 10.0.15.0/24 area 0.0.0.0\n\
-exit\n\
-interface eth0\n\
-ip ospf cost 10\n\
+network 10.0.16.0/24 area 0.0.0.0\n\
+network 10.0.14.0/24 area 0.0.0.0\n\
 exit" > /etc/frr/frr.conf
 
-# Set the default command to run bash
+RUN echo "interface eth0\n\
+  ip ospf cost 5\n\
+exit" >> /etc/frr/frr.conf
+
+RUN echo "interface eth1\n\
+  ip ospf cost 20\n\
+exit" >> /etc/frr/frr.conf
+
+RUN echo "interface eth2\n\
+  ip ospf cost 10\n\
+exit" >> /etc/frr/frr.conf
+
+ENTRYPOINT ["/usr/lib/frr/frrinit.sh", "start"]
 CMD ["bash"]
+
+
+
+
+
+
+
+
+
