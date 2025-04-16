@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   r1:
     build: .
@@ -10,13 +8,11 @@ services:
     privileged: true
     networks:
       net14:
-        ipv4_address: 10.0.14.4
+        ipv4_address: 10.0.14.1 
       net15:
-        ipv4_address: 10.0.15.4
+        ipv4_address: 10.0.15.1
       net16:
-        ipv4_address: 10.0.16.4
-      net17:
-        ipv4_address: 10.0.17.4
+        ipv4_address: 10.0.16.1
 
   r2:
     build: .
@@ -26,10 +22,10 @@ services:
       - ALL
     privileged: true
     networks:
-      net16:
-        ipv4_address: 10.0.16.2
-      net14:
-        ipv4_address: 10.0.14.2
+      net15:
+        ipv4_address: 10.0.15.2  
+      net17:
+        ipv4_address: 10.0.17.1
 
   r3:
     build: .
@@ -41,8 +37,10 @@ services:
     networks:
       net17:
         ipv4_address: 10.0.17.2
-      net15:
-        ipv4_address: 10.0.15.2
+      net18:
+        ipv4_address: 10.0.18.1
+      net19:
+        ipv4_address: 10.0.19.1
 
   r4:
     build: .
@@ -52,10 +50,10 @@ services:
       - ALL
     privileged: true
     networks:
-      net17:
-        ipv4_address: 10.0.17.3
+      net18:
+        ipv4_address: 10.0.18.2
       net16:
-        ipv4_address: 10.0.16.3
+        ipv4_address: 10.0.16.2
 
   ha:
     build: .
@@ -76,27 +74,37 @@ services:
       - ALL
     privileged: true    
     networks:
-      net15:
-        ipv4_address: 10.0.15.3
+      net19:
+        ipv4_address: 10.0.19.2
 
 networks:
   net14:
     ipam:
       driver: default
       config:
-        - subnet: 10.0.14.0/24
+        - subnet: 10.0.14.0/30 
   net15:
     ipam:
       driver: default
       config:
-        - subnet: 10.0.15.0/24
+        - subnet: 10.0.15.0/30
   net16:
     ipam:
       driver: default
       config:
-        - subnet: 10.0.16.0/24
+        - subnet: 10.0.16.0/30
   net17:
     ipam:
       driver: default
       config:
-        - subnet: 10.0.17.0/24
+        - subnet: 10.0.17.0/30
+  net18:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.18.0/30
+  net19:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.19.0/30
