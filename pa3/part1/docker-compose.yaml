@@ -1,3 +1,4 @@
+version: '3'
 
 services:
   r1:
@@ -12,6 +13,49 @@ services:
         ipv4_address: 10.0.14.4
       net15:
         ipv4_address: 10.0.15.4
+      net16:
+        ipv4_address: 10.0.16.4
+      net17:
+        ipv4_address: 10.0.17.4
+
+  r2:
+    build: .
+    stdin_open: true
+    tty: true
+    cap_add:
+      - ALL
+    privileged: true
+    networks:
+      net16:
+        ipv4_address: 10.0.16.2
+      net14:
+        ipv4_address: 10.0.14.2
+
+  r3:
+    build: .
+    stdin_open: true
+    tty: true
+    cap_add:
+      - ALL
+    privileged: true
+    networks:
+      net17:
+        ipv4_address: 10.0.17.2
+      net15:
+        ipv4_address: 10.0.15.2
+
+  r4:
+    build: .
+    stdin_open: true
+    tty: true
+    cap_add:
+      - ALL
+    privileged: true
+    networks:
+      net17:
+        ipv4_address: 10.0.17.3
+      net16:
+        ipv4_address: 10.0.16.3
 
   ha:
     build: .
@@ -46,8 +90,13 @@ networks:
       driver: default
       config:
         - subnet: 10.0.15.0/24
-
-
-
-
-
+  net16:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.16.0/24
+  net17:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.17.0/24
