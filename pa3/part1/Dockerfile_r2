@@ -1,0 +1,38 @@
+FROM ubuntu
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      bash iproute2 net-tools tcpdump vim iputils-ping \
+      curl gnupg lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -s https://deb.frrouting.org/frr/keys.gpg \
+      | tee /usr/share/keyrings/frrouting.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/frrouting.gpg] \
+      https://deb.frrouting.org/frr $(lsb_release -sc) frr-stable" \
+      > /etc/apt/sources.list.d/frr.list && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y frr frr-pythontools && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
+
+
+RUN printf 'router ospf\n\
+  ospf router-id 10.0.15.3\n\
+  network 10.0.15.0/24 area 0.0.0.0\n\
+  network 10.0.17.0/24 area 0.0.0.0\n\
+exit\n\
+\n\
+interface eth0\n\
+  ip ospf cost 10\n\
+exit\n\
+\n\
+interface eth1\n\
+  ip ospf cost 17\n\
+exit\n' \
+  > /etc/frr/frr.conf
+
+
+CMD service frr start && bash
+
