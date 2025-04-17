@@ -1,46 +1,39 @@
 FROM ubuntu
 
-RUN apt-get update
-RUN apt-get -y install bash iproute2 net-tools tcpdump vim iputils-ping curl gnupg lsb-release
-RUN apt-get clean
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      bash iproute2 net-tools tcpdump vim iputils-ping \
+      curl gnupg lsb-release \
+    && rm -rf /var/lib/apt/lists/*
 
+RUN curl -s https://deb.frrouting.org/frr/keys.gpg \
+      | tee /usr/share/keyrings/frrouting.gpg > /dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/frrouting.gpg] \
+      https://deb.frrouting.org/frr $(lsb_release -sc) frr-stable" \
+      > /etc/apt/sources.list.d/frr.list && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y frr frr-pythontools && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN curl -s https://deb.frrouting.org/frr/keys.gpg | tee /usr/share/keyrings/frrouting.gpg > /dev/null 
-RUN echo deb [signed-by=/usr/share/keyrings/frrouting.gpg] https://deb.frrouting.org/frr $(lsb_release -s -c) frr-stable | tee -a /etc/apt/sources.list.d/frr.list 
-RUN apt-get update 
-RUN apt-get install -y frr frr-pythontools
+RUN sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
 
+RUN cat << 'EOF' > /etc/frr/frr.conf && \
+router ospf && \
+  ospf router-id 10.0.14.4 && \
+  network 10.0.15.0/24 area 0.0.0.0 && \
+  network 10.0.16.0/24 area 0.0.0.0 && \
+  network 10.0.14.0/24 area 0.0.0.0 && \
+exit && \
+interface eth0 && \
+  ip ospf cost 5 && \
+exit && \
+interface eth1 && \
+  ip ospf cost 20 && \
+exit && \
+interface eth2 && \
+  ip ospf cost 10 && \
+exit && \
+EOF
 
-RUN sed -i 's/ospfd=no/ospfd=yes/' /etc/frr/daemons
-
-
-RUN echo "router ospf\n\
-ospf router-id 10.0.14.4\n\
-network 10.0.15.0/24 area 0.0.0.0\n\
-network 10.0.16.0/24 area 0.0.0.0\n\
-network 10.0.14.0/24 area 0.0.0.0\n\
-exit" > /etc/frr/frr.conf
-
-RUN echo "interface eth0\n\
-  ip ospf cost 5\n\
-exit" >> /etc/frr/frr.conf
-
-RUN echo "interface eth1\n\
-  ip ospf cost 20\n\
-exit" >> /etc/frr/frr.conf
-
-RUN echo "interface eth2\n\
-  ip ospf cost 10\n\
-exit" >> /etc/frr/frr.conf
-
-ENTRYPOINT ["/usr/lib/frr/frrinit.sh", "start"]
-CMD ["bash"]
-
-
-
-
-
-
-
-
+CMD service frr start && bash
 
