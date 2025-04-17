@@ -19,22 +19,22 @@ RUN sed -i 's/^ospfd=no/ospfd=yes/' /etc/frr/daemons
 
 
 RUN printf 'router ospf\n\
-  ospf router-id 10.0.14.4\n\
-  network 10.0.15.0/24 area 0.0.0.0\n\
-  network 10.0.16.0/24 area 0.0.0.0\n\
-  network 10.0.14.0/24 area 0.0.0.0\n\
+  ospf router-id 10.0.17.4\n\
+  network 10.0.17.0/24 area 0.0.0.0\n\
+  network 10.0.18.0/24 area 0.0.0.0\n\
+  network 10.0.19.0/24 area 0.0.0.0\n\
 exit\n\
 \n\
 interface eth0\n\
-  ip ospf cost 5\n\
+  ip ospf cost 17\n\
 exit\n\
 \n\
 interface eth1\n\
-  ip ospf cost 20\n\
+  ip ospf cost 12\n\
 exit\n\
 \n\
 interface eth2\n\
-  ip ospf cost 10\n\
+  ip ospf cost 5\n\
 exit\n' \
   > /etc/frr/frr.conf
 

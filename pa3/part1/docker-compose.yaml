@@ -51,7 +51,7 @@ services:
   r4:
     build: 
       context: .
-      dockerfile: Dockerfile_r3
+      dockerfile: Dockerfile_r4
     stdin_open: true
     tty: true
     cap_add:
