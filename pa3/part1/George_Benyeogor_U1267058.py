@@ -67,24 +67,18 @@ def main():
     )
     
     sub = p.add_subparsers(dest="cmd", title="commands", required=True)
-    # sub.add_parser("construct", aliases=['c'], help="Bring up containers & Docker networks")
-    # sub.add_parser("destroy", aliases=['d'], help="Bring down containers & Docker networks")
-    # sub.add_parser("build", aliases=['b'], help="Build the network using docker-compose")
-    # mv = sub.add_parser("move", aliases=['m'], help="Shift traffic north or south path")
-    # mv.add_argument("direction", choices=["north", "south"],
-    #                 help="north = R1→R2→R3, south = R1→R4→R3")
     
     build = sub.add_parser("build", aliases=["b"], help="Bring up containers & Docker networks")
-    build.set_defaults(func=build_network)
+    build.set_defaults(func=lambda _: build_network())
 
     destroy = sub.add_parser("destroy", aliases=["d"], help="Bring down containers & Docker networks")
-    destroy.set_defaults(func=destroy_network)
+    destroy.set_defaults(func=lambda _: destroy_network)
 
     construct = sub.add_parser("construct", aliases=["c"], help="Bring up containers & Docker networks")
-    construct.set_defaults(func=construct_network)
+    construct.set_defaults(func=lambda _: construct_network)
 
-    mv = sub.add_parser("move", aliases=["m"], help="…")
-    mv.add_argument("direction", choices=["north","south"], help="Shift traffic north or south path")
+    mv = sub.add_parser("move", aliases=["m"], help="Shift traffic north or south path")
+    mv.add_argument("direction", choices=["north","south"], help="north = R1→R2→R3, south = R1→R4→R3")
     mv.set_defaults(func=lambda ns: move_traffic(ns.direction))
 
     args = p.parse_args()
