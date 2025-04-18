@@ -4,9 +4,6 @@ import argparse
 import subprocess
 import sys
 
-ROUTERS = ["part1-r1-1", "part1-r2-1", "part1-r3-1", "part1-r4-1"]
-HOSTS   = ["part1-ha-1", "part1-hb-1"]
-
 
 def run(cmd, **kw):
     print("> " + " ".join(cmd))
@@ -59,11 +56,11 @@ def configure_ospf_cost(router, interface, cost):
 
 def main():
     p = argparse.ArgumentParser(
+         usage="%(prog)s [-h] <command> [options]",
         description="Orchestrator for network traffic movement",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     
-    sub = p.add_subparsers(dest="cmd", title="commands", metavar="", required=True)
+    sub = p.add_subparsers(dest="cmd", title="commands", required=True)
     sub.add_parser("construct", help="Bring up containers & Docker networks")
     sub.add_parser("destroy",   help="Bring down containers & Docker networks")
     sub.add_parser("build",     help="Build the network using docker-compose")
