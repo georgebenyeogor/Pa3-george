@@ -25,11 +25,11 @@ RUN printf 'router ospf\n\
 exit\n\
 \n\
 interface eth0\n\
-  ip ospf cost 10\n\
+  ip ospf cost 6\n\
 exit\n\
 \n\
 interface eth1\n\
-  ip ospf cost 17\n\
+  ip ospf cost 9\n\
 exit\n' \
   > /etc/frr/frr.conf
 

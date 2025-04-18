@@ -41,12 +41,13 @@ services:
       - ALL
     privileged: true
     networks:
+      - net19:
+          ipv4_address: 10.0.19.4
       - net17:
           ipv4_address: 10.0.17.4
       - net18:
           ipv4_address: 10.0.18.4
-      - net19:
-          ipv4_address: 10.0.19.4
+      
 
   r4:
     build: 
@@ -58,10 +59,11 @@ services:
       - ALL
     privileged: true
     networks:
-      - net18:
-         ipv4_address: 10.0.18.3
       - net16:
-         ipv4_address: 10.0.16.3
+          ipv4_address: 10.0.16.3
+      - net18:
+          ipv4_address: 10.0.18.3
+      
 
   ha:
     build: .
