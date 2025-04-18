@@ -25,19 +25,29 @@ RUN printf 'router ospf\n\
   network 10.0.18.0/24 area 0.0.0.0\n\
 exit\n\
 \n\
-interface eth0\n\
+interface net19\n\
   ip ospf cost 4\n\
 exit\n\
 \n\
-interface eth1\n\
+interface net17\n\
   ip ospf cost 6\n\
 exit\n\
 \n\
-interface eth2\n\
+interface net18\n\
   ip ospf cost 14\n\
 exit\n' \
   > /etc/frr/frr.conf
 
 
-CMD service frr start && bash
+
+CMD bash -c "\
+  for N in 19 17 18; do \
+    IF=\$(ip -o -4 addr show | awk \"/10\\\\.0\\\\.\${N}\\\\./{print \\\$2}\"); \
+    ip link set \"\$IF\" down; \
+    ip link set \"\$IF\" name net\${N}; \
+    ip link set net\${N} up; \
+  done && \
+  service frr start && \
+  exec bash"
+
 
