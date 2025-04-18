@@ -20,34 +20,12 @@ def build_network():
 def construct_network():
     """Bring up all containers & networks via docker‑compose"""
     run(["docker", "compose", "up", "-d"])
-    print("Network constructed.")
+    print("Network constructed. Please wait 30 seconds for OSPF setup to complete.")
 
 
 def destroy_network():
     """Bring down all containers & networks via docker‑compose"""
     run(["docker", "compose", "down"])
-
-
-def start_ospf():
-    """
-    For each router, restart FRR and verify ospfd is running.
-    """
-    for r in ROUTERS:
-        run(["docker", "exec", "-it", r, "service", "frr", "restart"])
-        run(["docker", "exec", "-it", r, "ps", "-ef", "|", "grep", "[o]spf"])   
-
-
-def install_host_routes():
-    """
-    Install default routes on HostA and HostB pointing to the router they attach to.
-    """
-
-    # HostA → R1's IP on net14
-    run(["docker", "exec", "-it", "part1-ha-1", 
-         "ip", "route", "add", "default", "via", "10.0.14.4"])
-    # HostB → R3's IP on net19
-    run(["docker", "exec", "-it", "part1-hb-1",
-         "ip", "route", "add", "default", "via", "10.0.19.4"])
 
 
 def move_traffic(path):
@@ -58,30 +36,25 @@ def move_traffic(path):
     """
     if path == "north":
         # make R1→R2 cheap, R1→R4 expensive
-        run(["docker","exec","part1-r1-1","vtysh",
-             "-c","configure terminal",
-             "-c","interface eth1",   # R1→R2
-             "-c","ip ospf cost 5",
-             "-c","end","-c","write memory"])
-        run(["docker","exec","part1-r1-1","vtysh",
-             "-c","configure terminal",
-             "-c","interface eth0",   # R1→R4
-             "-c","ip ospf cost 50",
-             "-c","end","-c","write memory"])
-        # repeat on R3, R2, R4 as needed
+        configure_ospf_cost("part1-r1-1", "net15", 5)  # R1→R2 
+        configure_ospf_cost("part1-r2-1", "net17", 5)  # R2→R3 
+        configure_ospf_cost("part1-r1-1", "net16", 50) # R1→R4
+        configure_ospf_cost("part1-r4-1", "net18", 50) # R4→R3
+
     else:
-        # south path: cheap R1→R4, expensive R1→R2
-        run(["docker","exec","part1-r1-1","vtysh",
-             "-c","configure terminal",
-             "-c","interface eth0",   # R1→R4
-             "-c","ip ospf cost 5",
-             "-c","end","-c","write memory"])
-        run(["docker","exec","part1-r1-1","vtysh",
-             "-c","configure terminal",
-             "-c","interface eth1",   # R1→R2
-             "-c","ip ospf cost 50",
-             "-c","end","-c","write memory"])
-        # repeat on R3, R2, R4 as needed
+        # make R1→R4 cheap, R1→R2 expensive
+        configure_ospf_cost("part1-r1-1", "net16", 5)  # R1→R2 
+        configure_ospf_cost("part1-r4-1", "net18", 5)  # R2→R3 
+        configure_ospf_cost("part1-r1-1", "net15", 50) # R1→R4
+        configure_ospf_cost("part1-r2-1", "net17", 50) # R4→R3
+
+
+def configure_ospf_cost(router, interface, cost):
+            run(["docker", "exec", router, "vtysh",
+             "-c", "configure terminal",
+             "-c", f"interface {interface}",
+             "-c", f"ip ospf cost {cost}",
+             "-c", "end", "-c", "write memory"])
 
 
 def main():
@@ -90,13 +63,9 @@ def main():
     )
     
     sub = p.add_subparsers(dest="cmd", title="commands", required=True)
-
     sub.add_parser("construct", help="Bring up containers & Docker networks")
-    sub.add_parser("ospf",      help="(Re)start OSPF daemons on routers")
-    sub.add_parser("routes",    help="Install default routes on HostA/HostB")
     sub.add_parser("destroy",   help="Bring down containers & Docker networks")
     sub.add_parser("build",     help="Build the network using docker-compose")
-
     mv = sub.add_parser("move", help="Shift traffic north or south path")
     mv.add_argument("direction", choices=["north","south"],
                     help="north = R1→R2→R3, south = R1→R4→R3")
@@ -109,10 +78,6 @@ def main():
         destroy_network()
     elif args.cmd == "build":
         build_network()
-    elif args.cmd == "ospf":
-        start_ospf()
-    elif args.cmd == "routes":
-        install_host_routes()
     elif args.cmd == "move":
         move_traffic(args.direction)
     else:
