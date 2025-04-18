@@ -73,6 +73,7 @@ services:
     networks:
       net14:
         ipv4_address: 10.0.14.3
+    command: bash -lc "ip route add 10.0.19.0/24 via 10.0.14.4 && exec bash"
 
   hb:
     build: .
@@ -84,6 +85,8 @@ services:
     networks:
       net19:
         ipv4_address: 10.0.19.3
+    command: bash -lc "ip route add 10.0.14.0/24 via 10.0.19.4 && exec bash"
+
 
 networks:
   net14:
