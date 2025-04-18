@@ -5,6 +5,12 @@ import subprocess
 import sys
 
 
+class HelpOnErrorParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.print_help(sys.stderr)
+        self.exit(2, f"\n{self.prog}: error: {message}\n")
+
+
 def run(cmd, **kw):
     print("> " + " ".join(cmd))
     subprocess.run(cmd, check=True, **kw)
@@ -55,32 +61,36 @@ def configure_ospf_cost(router, interface, cost):
 
 
 def main():
-    p = argparse.ArgumentParser(
+    p = HelpOnErrorParser(
          usage="%(prog)s [-h] <command> [options]",
         description="Orchestrator for network traffic movement",
     )
     
     sub = p.add_subparsers(dest="cmd", title="commands", required=True)
-    sub.add_parser("construct", aliases=['c'], help="Bring up containers & Docker networks")
-    sub.add_parser("destroy", aliases=['d'], help="Bring down containers & Docker networks")
-    sub.add_parser("build", aliases=['b'], help="Build the network using docker-compose")
-    mv = sub.add_parser("move", aliases=['m'], help="Shift traffic north or south path")
-    mv.add_argument("direction", choices=["north", "south"],
-                    help="north = R1→R2→R3, south = R1→R4→R3")
+    # sub.add_parser("construct", aliases=['c'], help="Bring up containers & Docker networks")
+    # sub.add_parser("destroy", aliases=['d'], help="Bring down containers & Docker networks")
+    # sub.add_parser("build", aliases=['b'], help="Build the network using docker-compose")
+    # mv = sub.add_parser("move", aliases=['m'], help="Shift traffic north or south path")
+    # mv.add_argument("direction", choices=["north", "south"],
+    #                 help="north = R1→R2→R3, south = R1→R4→R3")
+    
+    build = sub.add_parser("build", aliases=["b"], help="Bring up containers & Docker networks")
+    build.set_defaults(func=build_network)
+
+    destroy = sub.add_parser("destroy", aliases=["d"], help="Bring down containers & Docker networks")
+    destroy.set_defaults(func=destroy_network)
+
+    construct = sub.add_parser("construct", aliases=["c"], help="Bring up containers & Docker networks")
+    construct.set_defaults(func=construct_network)
+
+    mv = sub.add_parser("move", aliases=["m"], help="…")
+    mv.add_argument("direction", choices=["north","south"], help="Shift traffic north or south path")
+    mv.set_defaults(func=lambda ns: move_traffic(ns.direction))
 
     args = p.parse_args()
+    args.func(args)
 
-    if args.cmd == "construct":
-        construct_network()
-    elif args.cmd == "destroy":
-        destroy_network()
-    elif args.cmd == "build":
-        build_network()
-    elif args.cmd == "move":
-        move_traffic(args.direction)
-    else:
-        p.print_help()
-        sys.exit(1)
+   
 
 # This is the main entry point for the script
 # It allows the script to be run directly or imported as a module
