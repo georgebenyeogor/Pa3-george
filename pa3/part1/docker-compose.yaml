@@ -9,12 +9,12 @@ services:
       - ALL
     privileged: true
     networks:
-      net14:
-        ipv4_address: 10.0.14.4 
-      net15:
-        ipv4_address: 10.0.15.4
-      net16:
-        ipv4_address: 10.0.16.4
+      - net14:
+         ipv4_address: 10.0.14.4 
+      - net15:
+         ipv4_address: 10.0.15.4
+      - net16:
+         ipv4_address: 10.0.16.4
 
   r2:
     build: 
@@ -26,10 +26,10 @@ services:
       - ALL
     privileged: true
     networks:
-      net15:
-        ipv4_address: 10.0.15.3  
-      net17:
-        ipv4_address: 10.0.17.3
+      - net15:
+          ipv4_address: 10.0.15.3  
+      - net17:
+          ipv4_address: 10.0.17.3
 
   r3:
     build: 
@@ -41,12 +41,12 @@ services:
       - ALL
     privileged: true
     networks:
-      net17:
-        ipv4_address: 10.0.17.4
-      net18:
-        ipv4_address: 10.0.18.4
-      net19:
-        ipv4_address: 10.0.19.4
+      - net17:
+          ipv4_address: 10.0.17.4
+      - net18:
+          ipv4_address: 10.0.18.4
+      - net19:
+          ipv4_address: 10.0.19.4
 
   r4:
     build: 
@@ -58,10 +58,10 @@ services:
       - ALL
     privileged: true
     networks:
-      net18:
-        ipv4_address: 10.0.18.3
-      net16:
-        ipv4_address: 10.0.16.3
+      - net18:
+         ipv4_address: 10.0.18.3
+      - net16:
+         ipv4_address: 10.0.16.3
 
   ha:
     build: .
