@@ -40,24 +40,41 @@ def move_traffic(path):
     if path == "north":
         # make R1→R2 cheap, R1→R4 expensive
         configure_ospf_cost("part1-r1-1", "net15", 5)  # R1→R2 
-        configure_ospf_cost("part1-r2-1", "net17", 5)  # R2→R3 
+        configure_ospf_cost("part1-r2-1", "net17", 5)  # R2→R3
+        configure_ospf_cost("part1-r3-1", "net17", 5)  # R3→R2 
+        configure_ospf_cost("part1-r2-1", "net15", 5)  # R2→R1
+ 
         configure_ospf_cost("part1-r1-1", "net16", 50) # R1→R4
         configure_ospf_cost("part1-r4-1", "net18", 50) # R4→R3
+        configure_ospf_cost("part1-r3-1", "net18", 50) # R3→R4 
+        configure_ospf_cost("part1-r4-1", "net16", 50) # R4→R1
+
 
     else:
         # make R1→R4 cheap, R1→R2 expensive
-        configure_ospf_cost("part1-r1-1", "net16", 5)  # R1→R2 
-        configure_ospf_cost("part1-r4-1", "net18", 5)  # R2→R3 
+        configure_ospf_cost("part1-r1-1", "net16", 5)  # R1→R4 
+        configure_ospf_cost("part1-r4-1", "net18", 5)  # R4→R3
+        configure_ospf_cost("part1-r3-1", "net18", 5)  # R3→R4
+        configure_ospf_cost("part1-r4-1", "net16", 5)  # R4→R1
+
+
         configure_ospf_cost("part1-r1-1", "net15", 50) # R1→R4
         configure_ospf_cost("part1-r2-1", "net17", 50) # R4→R3
+        configure_ospf_cost("part1-r3-1", "net17", 50) # R3→R2
+        configure_ospf_cost("part1-r2-1", "net15", 50) # R2→R1
 
 
 def configure_ospf_cost(router, interface, cost):
-            run(["docker", "exec", router, "vtysh",
-             "-c", "configure terminal",
-             "-c", f"interface {interface}",
-             "-c", f"ip ospf cost {cost}",
-             "-c", "end", "-c", "write memory"])
+    """
+    Configure the OSPF cost for a given interface on a router.
+    This function uses vtysh to run the OSPF configuration commands inside the container.   
+    """
+    # Run the vtysh command inside the router container to configure OSPF cost
+    run(["docker", "exec", router, "vtysh",
+        "-c", "configure terminal",
+        "-c", f"interface {interface}",
+        "-c", f"ip ospf cost {cost}",
+        "-c", "end", "-c", "write memory"])
 
 
 def main():
