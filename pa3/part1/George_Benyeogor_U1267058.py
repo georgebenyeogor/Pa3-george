@@ -60,7 +60,7 @@ def main():
         description="Orchestrator for network traffic movement",
     )
     
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd", title="commands", required=True)
     sub.add_parser("construct", help="Bring up containers & Docker networks")
     sub.add_parser("destroy",   help="Bring down containers & Docker networks")
     sub.add_parser("build",     help="Build the network using docker-compose")
