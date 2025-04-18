@@ -10,9 +10,19 @@ def run(cmd, **kw):
     print("> " + " ".join(cmd))
     subprocess.run(cmd, check=True, **kw)
 
+def build_network():
+    """Build the network using docker-compose"""
+    run(["docker", "compose", "build", "--no-cache"])
+
+
 def construct_network():
     """Bring up all containers & networks via docker‑compose"""
     run(["docker", "compose", "up", "-d"])
+
+
+def destroy_network():
+    """Bring down all containers & networks via docker‑compose"""
+    run(["docker", "compose", "down"])
 
 
 def start_ospf():
@@ -27,7 +37,6 @@ def start_ospf():
 def install_host_routes():
     """
     Install default routes on HostA and HostB pointing to the router they attach to.
-    Adjust the gateway IP as needed.
     """
 
     # HostA → R1's IP on net14
@@ -90,6 +99,10 @@ def main():
 
     if args.cmd == "construct":
         construct_network()
+    elif args.cmd == "destroy":
+        destroy_network()
+    elif args.cmd == "build":
+        build_network()
     elif args.cmd == "ospf":
         start_ospf()
     elif args.cmd == "routes":
@@ -100,5 +113,7 @@ def main():
         p.print_help()
         sys.exit(1)
 
+# This is the main entry point for the script
+# It allows the script to be run directly or imported as a module
 if __name__ == "__main__":
     main()
