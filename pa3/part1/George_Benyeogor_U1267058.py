@@ -59,16 +59,16 @@ def configure_ospf_cost(router, interface, cost):
 
 def main():
     p = argparse.ArgumentParser(
-        usage="%(prog)s [-h] <command> [options]",
-        description="Orchestrator for network traffic movement"
+        description="Orchestrator for network traffic movement",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     
-    sub = p.add_subparsers(dest="cmd", help="commands", metavar="",    required=True)
+    sub = p.add_subparsers(dest="cmd", title="commands", required=True)
     sub.add_parser("construct", help="Bring up containers & Docker networks")
     sub.add_parser("destroy",   help="Bring down containers & Docker networks")
     sub.add_parser("build",     help="Build the network using docker-compose")
     mv = sub.add_parser("move", help="Shift traffic north or south path")
-    mv.add_argument("direction", choices=["north","south"],
+    mv.add_argument("direction", choices=["north", "south"],
                     help="north = R1→R2→R3, south = R1→R4→R3")
 
     args = p.parse_args()
