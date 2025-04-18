@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import subprocess
 import sys
@@ -18,6 +20,7 @@ def build_network():
 def construct_network():
     """Bring up all containers & networks via docker‑compose"""
     run(["docker", "compose", "up", "-d"])
+    print("Network constructed.")
 
 
 def destroy_network():
