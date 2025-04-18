@@ -59,6 +59,7 @@ def configure_ospf_cost(router, interface, cost):
 
 def main():
     p = argparse.ArgumentParser(
+        usage="%(prog)s [-h] <command> [options]",
         description="Orchestrator for network traffic movement"
     )
     
