@@ -72,10 +72,10 @@ def main():
     build.set_defaults(func=lambda _: build_network())
 
     destroy = sub.add_parser("destroy", aliases=["d"], help="Bring down containers & Docker networks")
-    destroy.set_defaults(func=lambda _: destroy_network)
+    destroy.set_defaults(func=lambda _: destroy_network())
 
     construct = sub.add_parser("construct", aliases=["c"], help="Bring up containers & Docker networks")
-    construct.set_defaults(func=lambda _: construct_network)
+    construct.set_defaults(func=lambda _: construct_network())
 
     mv = sub.add_parser("move", aliases=["m"], help="Shift traffic north or south path")
     mv.add_argument("direction", choices=["north","south"], help="north = R1→R2→R3, south = R1→R4→R3")
