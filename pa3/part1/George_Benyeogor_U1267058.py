@@ -89,7 +89,8 @@ def main():
         description="Orchestrator for network traffic movement"
     )
     
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd", title="commands",
+                      metavar="")
     sub.add_parser("construct", help="Bring up containers & Docker networks")
     sub.add_parser("ospf",      help="(Re)start OSPF daemons on routers")
     sub.add_parser("routes",    help="Install default routes on HostA/HostB")
