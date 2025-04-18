@@ -29,7 +29,7 @@ def install_host_routes():
     Install default routes on HostA and HostB pointing to the router they attach to.
     Adjust the gateway IP as needed.
     """
-    
+
     # HostA → R1's IP on net14
     run(["docker", "exec", "-it", "part1-ha-1", 
          "ip", "route", "add", "default", "via", "10.0.14.4"])
@@ -74,7 +74,7 @@ def move_traffic(path):
 
 def main():
     p = argparse.ArgumentParser(
-        description="Orchestrator for CS4480 Part 2 traffic movement"
+        description="Orchestrator for network traffic movement"
     )
     
     sub = p.add_subparsers(dest="cmd", required=True)
