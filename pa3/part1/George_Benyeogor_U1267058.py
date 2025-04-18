@@ -61,10 +61,10 @@ def main():
     )
     
     sub = p.add_subparsers(dest="cmd", title="commands", required=True)
-    sub.add_parser("construct", help="Bring up containers & Docker networks")
-    sub.add_parser("destroy",   help="Bring down containers & Docker networks")
-    sub.add_parser("build",     help="Build the network using docker-compose")
-    mv = sub.add_parser("move", help="Shift traffic north or south path")
+    sub.add_parser("construct", aliases=['c'], help="Bring up containers & Docker networks")
+    sub.add_parser("destroy", aliases=['d'], help="Bring down containers & Docker networks")
+    sub.add_parser("build", aliases=['b'], help="Build the network using docker-compose")
+    mv = sub.add_parser("move", aliases=['m'], help="Shift traffic north or south path")
     mv.add_argument("direction", choices=["north", "south"],
                     help="north = R1→R2→R3, south = R1→R4→R3")
 
